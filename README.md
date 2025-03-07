@@ -1,28 +1,48 @@
 # Basketball Physics Simulation
 
-A custom physics engine simulation of a basketball bouncing within screen boundaries.
+A modular JavaScript physics engine that simulates a basketball with realistic physics including gravity, air resistance, bouncing, and surface friction.
 
 ## Features
 
-- Custom physics engine implementation
-- Realistic basketball bouncing with gravity and collision detection
-- Basketball with visual details (orange color with black lines)
-- Interactive - click anywhere to apply force to the basketball
-- Responsive design that adapts to window resizing
+- Realistic basketball simulation with gravity and air resistance
+- Tarmac surface with appropriate friction
+- Visual trail effects for fast movement
+- Charge-and-release gameplay mechanic
+- Responsive design that adapts to window size
 
-## Physics Concepts Implemented
+## Project Structure
 
-- Gravity acceleration
-- Collision detection and response
-- Friction (air resistance)
-- Restitution (bounciness)
-- Vector-based force application
+The codebase is organized into separate modules following modern JavaScript practices:
 
-## How to Run
+- `src/constants.js` - Shared constants, configuration, and state
+- `src/ball.js` - Ball physics calculations and state updates
+- `src/renderer.js` - Canvas drawing functions for visual elements
+- `src/input.js` - User interaction handlers (mouse events)
+- `src/engine.js` - Main physics engine and animation loop
+- `src/main.js` - Entry point for the application
 
-1. Open the `index.html` file in a web browser
-2. Watch the basketball bounce around the screen
-3. Click anywhere to apply force to the basketball in that direction
+## Physics Components
+
+- **Gravity**: Constant downward acceleration
+- **Air Resistance**: Calculated based on air density, velocity, drag coefficient, and cross-sectional area
+- **Surface Friction**: Different friction values for different surfaces
+- **Collision Detection**: Boundary collisions with walls and floor
+- **Rotational Physics**: Ball rotation affected by collisions and rolling
+
+## How to Use
+
+1. Open `index.html` in a web browser
+2. Click and drag on the basketball to charge it
+3. Release to launch the ball with the direction and power indicated by the arrow
+4. The ball will interact with boundaries and surfaces realistically
+
+## Development
+
+The modular structure allows for easy extension:
+
+- Add new surfaces by extending the `surfaces` object in `constants.js`
+- Implement new physics behaviors in `ball.js`
+- Create additional visual effects in `renderer.js`
 
 ## Files
 
