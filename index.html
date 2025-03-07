@@ -2,12 +2,25 @@
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover"
+    />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="black" />
     <title>Basketball Physics Simulation</title>
     <link rel="stylesheet" href="styles.css" />
   </head>
   <body>
-    <canvas id="canvas"></canvas>
+    <div class="header">
+      <h1>Custom JS Physics Engine</h1>
+      <h2>Created by NilesBoyes (NilzeyX)</h2>
+      <p>
+        Click and drag or tap and drag to launch ball. Refresh page for
+        different platform layouts.
+      </p>
+    </div>
+    <canvas id="canvas" style="touch-action: none"></canvas>
     <script type="module" src="src/main.js"></script>
   </body>
 </html>

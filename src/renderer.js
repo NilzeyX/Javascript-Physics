@@ -1,5 +1,13 @@
 // Renderer Module - Handles all drawing operations
-import { canvas, ctx, ball, surfaces, trail, charge } from "./constants.js";
+import {
+  canvas,
+  ctx,
+  ball,
+  surfaces,
+  trail,
+  charge,
+  platforms,
+} from "./constants.js";
 
 // Main draw function that calls all other drawing functions
 export function draw() {
@@ -8,6 +16,9 @@ export function draw() {
 
   // Draw the tarmac surface
   drawTarmacSurface();
+
+  // Draw the platforms
+  drawPlatforms();
 
   // Draw the trail
   drawTrail();
@@ -272,4 +283,106 @@ function drawChargeArrow() {
   ctx.fillStyle = "white";
   ctx.textAlign = "center";
   ctx.fillText(`Power: ${Math.round(charge.power * 2.5)}`, endX, endY - 20);
+}
+
+// Draw the platforms
+function drawPlatforms() {
+  for (const platform of platforms) {
+    // Save the current context state
+    ctx.save();
+
+    // Translate to the center of the platform
+    const centerX = platform.x;
+    const centerY = platform.y;
+    ctx.translate(centerX, centerY);
+
+    // Rotate the context
+    ctx.rotate(platform.rotation);
+
+    // Draw the main platform body with rounded corners
+    const halfWidth = platform.width / 2;
+    const halfHeight = platform.height / 2;
+    const radius = platform.borderRadius || 0;
+
+    // Parse the platform color to create a matching glow
+    let glowColor;
+    if (platform.color.startsWith("hsl")) {
+      // Extract HSL values
+      const hslMatch = platform.color.match(/hsl\((\d+),\s*(\d+)%,\s*(\d+)%\)/);
+      if (hslMatch) {
+        const [_, h, s, l] = hslMatch;
+        glowColor = `hsla(${h}, ${s}%, ${l}%, 0.35)`;
+      } else {
+        glowColor = "rgba(0, 0, 0, 0.35)"; // Fallback
+      }
+    } else {
+      // For hex or other color formats, use the same color with opacity
+      glowColor = platform.color.replace(")", ", 0.35)").replace("rgb", "rgba");
+      if (!glowColor.includes("rgba")) {
+        // Handle hex colors
+        glowColor = "rgba(255, 255, 255, 0.35)"; // Fallback
+      }
+    }
+
+    // Add a faint glow using the platform's color
+    ctx.shadowColor = glowColor;
+    ctx.shadowBlur = 25;
+    ctx.shadowOffsetX = 0;
+    ctx.shadowOffsetY = 0;
+
+    // Create a rounded rectangle path
+    ctx.beginPath();
+    ctx.moveTo(-halfWidth + radius, -halfHeight);
+    ctx.lineTo(halfWidth - radius, -halfHeight);
+    ctx.arcTo(halfWidth, -halfHeight, halfWidth, -halfHeight + radius, radius);
+    ctx.lineTo(halfWidth, halfHeight - radius);
+    ctx.arcTo(halfWidth, halfHeight, halfWidth - radius, halfHeight, radius);
+    ctx.lineTo(-halfWidth + radius, halfHeight);
+    ctx.arcTo(-halfWidth, halfHeight, -halfWidth, halfHeight - radius, radius);
+    ctx.lineTo(-halfWidth, -halfHeight + radius);
+    ctx.arcTo(
+      -halfWidth,
+      -halfHeight,
+      -halfWidth + radius,
+      -halfHeight,
+      radius
+    );
+    ctx.closePath();
+
+    // Fill with platform color
+    ctx.fillStyle = platform.color;
+    ctx.fill();
+
+    // Add a subtle shadow for depth
+    ctx.shadowColor = "rgba(0, 0, 0, 0.2)";
+    ctx.shadowBlur = 5;
+    ctx.shadowOffsetY = 2;
+
+    // Add a subtle highlight on top for a polished look
+    ctx.beginPath();
+    ctx.moveTo(-halfWidth + radius, -halfHeight);
+    ctx.lineTo(halfWidth - radius, -halfHeight);
+    ctx.arcTo(halfWidth, -halfHeight, halfWidth, -halfHeight + radius, radius);
+    ctx.lineTo(halfWidth, -halfHeight + 3);
+    ctx.lineTo(-halfWidth, -halfHeight + 3);
+    ctx.lineTo(-halfWidth, -halfHeight + radius);
+    ctx.arcTo(
+      -halfWidth,
+      -halfHeight,
+      -halfWidth + radius,
+      -halfHeight,
+      radius
+    );
+    ctx.closePath();
+    ctx.fillStyle = "rgba(255, 255, 255, 0.3)";
+    ctx.fill();
+
+    // Reset shadow
+    ctx.shadowColor = "transparent";
+    ctx.shadowBlur = 0;
+    ctx.shadowOffsetY = 0;
+
+    // Restore the context to its original state
+    ctx.restore();
+  }
 }

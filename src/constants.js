@@ -32,6 +32,45 @@ export const surfaces = {
   },
 };
 
+// Platform properties
+export const platforms = [
+  // Each platform has position, size, and physical properties
+  // Platforms will be positioned randomly in initializeConstants
+  {
+    x: 0, // Will be set based on canvas
+    y: 0, // Will be set based on canvas
+    width: 200, // Will be randomized
+    height: 15, // Reduced height
+    color: "#8B4513", // Will be randomized to vibrant colors
+    friction: 0.95, // Slightly less friction than tarmac
+    restitution: 0.7, // Slightly less bouncy than default
+    rotation: 0, // Will be randomized between -20 and 20 degrees
+    borderRadius: 8, // Rounded corners
+  },
+  {
+    x: 0, // Will be set based on canvas
+    y: 0, // Will be set based on canvas
+    width: 150, // Will be randomized
+    height: 15, // Reduced height
+    color: "#4682B4", // Will be randomized to vibrant colors
+    friction: 0.97, // More slippery
+    restitution: 0.9, // More bouncy
+    rotation: 0, // Will be randomized between -20 and 20 degrees
+    borderRadius: 8, // Rounded corners
+  },
+  {
+    x: 0, // Will be set based on canvas
+    y: 0, // Will be set based on canvas
+    width: 250, // Will be randomized
+    height: 15, // Reduced height
+    color: "#2E8B57", // Will be randomized to vibrant colors
+    friction: 0.96, // Medium friction
+    restitution: 0.85, // Medium bounce
+    rotation: 0, // Will be randomized between -20 and 20 degrees
+    borderRadius: 8, // Rounded corners
+  },
+];
+
 // Basketball court boundaries
 export const boundaries = {
   left: 0,
@@ -68,6 +107,21 @@ export const trail = {
   scaleRate: 0.9, // How quickly the trail scales down
 };
 
+// Helper function to get a random number between min and max
+function getRandomNumber(min, max) {
+  return Math.random() * (max - min) + min;
+}
+
+// Helper function to generate a random vibrant color
+function getRandomVibrantColor() {
+  // Generate vibrant colors with high saturation and brightness
+  const hue = Math.floor(Math.random() * 360); // Random hue (0-359)
+  const saturation = Math.floor(getRandomNumber(70, 100)); // High saturation (70-100%)
+  const lightness = Math.floor(getRandomNumber(45, 65)); // Medium-high lightness (45-65%)
+
+  return `hsl(${hue}, ${saturation}%, ${lightness}%)`;
+}
+
 // Initialize canvas elements and update related constants
 export function initializeConstants(canvasElement) {
   canvas = canvasElement;
@@ -77,6 +131,49 @@ export function initializeConstants(canvasElement) {
   ball.x = canvas.width / 2;
   ball.y = canvas.height / 3;
   ball.area = (Math.PI * ball.radius * ball.radius) / 1000; // Scaled down for visual effect
+
+  // Divide the canvas into quarters horizontally
+  const quarterWidth = canvas.width / 3;
+
+  // Determine if we're on a mobile device based on screen width
+  // Typical breakpoint for mobile is around 768px
+  const isMobile = window.innerWidth < 768;
+
+  // Set platform size ranges based on device type
+  const minWidth = isMobile ? 70 : 120;
+  const maxWidth = isMobile ? 150 : 280;
+
+  // Platform height can also be adjusted based on device
+  const platformHeight = isMobile ? 12 : 15;
+
+  // Randomize platform properties
+  for (let i = 0; i < platforms.length; i++) {
+    const platform = platforms[i];
+
+    // Random width based on device size
+    platform.width = getRandomNumber(minWidth, maxWidth);
+
+    // Update height based on device
+    platform.height = platformHeight;
+
+    // Random rotation between -20 and 20 degrees (convert to radians)
+    platform.rotation = getRandomNumber(-20, 20) * (Math.PI / 180);
+
+    // Random vertical position in the middle 60% of the canvas
+    platform.y = getRandomNumber(canvas.height * 0.2, canvas.height * 0.8);
+
+    // Position each platform in its designated quarter
+    // Platform 0 in 1st quarter, platform 1 in 2nd quarter, platform 2 in 3rd quarter
+    const quarterStart = i * quarterWidth;
+    const quarterEnd = (i + 1) * quarterWidth;
+
+    // Position horizontally within the quarter, leaving some margin
+    const margin = platform.width / 2 + 20; // Margin to ensure platform doesn't go out of quarter
+    platform.x = getRandomNumber(quarterStart + margin, quarterEnd - margin);
+
+    // Assign a random vibrant color
+    platform.color = getRandomVibrantColor();
+  }
 
   // Set boundaries
   updateBoundaries();

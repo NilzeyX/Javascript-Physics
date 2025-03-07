@@ -11,6 +11,16 @@ function getMousePos(event) {
   };
 }
 
+// Get touch position relative to canvas
+function getTouchPos(event) {
+  const rect = canvas.getBoundingClientRect();
+  const touch = event.touches[0] || event.changedTouches[0];
+  return {
+    x: touch.clientX - rect.left,
+    y: touch.clientY - rect.top,
+  };
+}
+
 // Initialize mouse event listeners
 export function initializeMouseEvents() {
   // Mouse down event - start dragging if clicking on ball
@@ -68,4 +78,73 @@ export function initializeMouseEvents() {
       canvas.style.cursor = "default";
     }
   });
+
+  // Touch event handlers for mobile devices
+  // Using { passive: false } to ensure preventDefault works on all browsers including Safari
+  canvas.addEventListener(
+    "touchstart",
+    function (event) {
+      // Prevent default to avoid scrolling/zooming
+      event.preventDefault();
+
+      const touchPos = getTouchPos(event);
+
+      if (isPointInBall(touchPos.x, touchPos.y)) {
+        charge.active = true;
+        charge.startX = touchPos.x;
+        charge.startY = touchPos.y;
+        charge.currentX = touchPos.x;
+        charge.currentY = touchPos.y;
+      }
+    },
+    { passive: false }
+  );
+
+  canvas.addEventListener(
+    "touchmove",
+    function (event) {
+      // Prevent default to avoid scrolling/zooming
+      event.preventDefault();
+
+      if (charge.active) {
+        const touchPos = getTouchPos(event);
+        charge.currentX = touchPos.x;
+        charge.currentY = touchPos.y;
+      }
+    },
+    { passive: false }
+  );
+
+  canvas.addEventListener(
+    "touchend",
+    function (event) {
+      // Prevent default to avoid scrolling/zooming
+      event.preventDefault();
+
+      if (charge.active) {
+        // Launch the ball
+        launchBall();
+
+        // Reset charge state
+        charge.active = false;
+        charge.power = 0;
+      }
+    },
+    { passive: false }
+  );
+
+  canvas.addEventListener(
+    "touchcancel",
+    function (event) {
+      // Prevent default to avoid scrolling/zooming
+      event.preventDefault();
+
+      if (charge.active) {
+        // Reset charge state
+        charge.active = false;
+        charge.power = 0;
+      }
+    },
+    { passive: false }
+  );
 }
